@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#메롱
 import gradio as gr
 import random
 
@@ -79,8 +80,8 @@ def insertVariation(originalContent):
     content = originalContent.split(".")
     if "" in content:
         content.remove("")
-    if(len(content) < 6):
-        return "7개 이상의 문장으로 구성되어 있는 지문만 삽입 문제를 제작할 수 있습니다"
+    if(len(content) < 8):
+        return "9개 이상의 문장으로 구성되어 있는 지문만 삽입 문제를 제작할 수 있습니다"
     sentenceNum = [*range(0, len(content))]
     data = insert_shuffle(sentenceNum)
     error = 0
@@ -171,7 +172,7 @@ def createProblems(context, problem):
     return value[0], value[1], value[2], value[3]
         
 
-component_context = gr.components.Textbox(interactive=True, label="영어 본문", placeholder="변형 문제를 제작할 영어 본문을 입력해주세요 (●'◡'●)\n\n참고: 최소 7줄의 본문을 입력해주세요")
+component_context = gr.components.Textbox(interactive=True, label="영어 본문", placeholder="변형 문제를 제작할 영어 본문을 입력해주세요 (●'◡'●)\n\n참고: 삽입 문제는 9줄 이상, 그 외 유형은 7줄 이상의 문장으로 구성되어 있어야 합니다")
 component_problem_type = gr.components.CheckboxGroup(label="어떤 종류의 문제를 생성하시겠습니까?", type="value", choices=problem_type)
 
 outputs=[]
