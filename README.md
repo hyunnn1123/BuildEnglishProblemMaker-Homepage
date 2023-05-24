@@ -3,6 +3,6 @@
 
 
 # 이 프로그램의 핵심 기능인 문제 생성 기능은 EnglishProblem-Maker와 동일합니다
-EnglishProblem-Maker로 이동하기 >> [깃허브 링크]: https://github.com/hyunnn1123/EnglishProblem-Maker "뿅"
+EnglishProblem-Maker로 이동하기 >> [github]: https://github.com/hyunnn1123/EnglishProblem-Maker "뿅"
 
 ![테스트](/example/test_image.png)
