@@ -3,6 +3,8 @@
 import gradio as gr
 import random
 
+from PyKakao import KoGPT
+
 def beVerbVariation(originalContent):
     if(originalContent == ""):
         return "본문을 입력하지 않았습니다"
@@ -152,11 +154,20 @@ def insertVariation(originalContent):
         content.remove("")
     return "글의 흐름으로 보아, 주어진 문장이 들어가기에 가장 적절한 곳을 고르시오.\n\n[ " + removedSentence + " ]\n\n" + textedContent.replace("★", "") + "\n\n\n** 정답: " + content[first][0:3]
 
+def summarizeProblems(originalContent, key, max_tokens):
+    api = KoGPT(service_key = key)
+    prompt = originalContent + "\n\n\n한줄 요약:"
+    max_tokens = 128
+    result = api.generate(prompt, max_tokens, temperature=0.7, top_p=0.8)
+    if 'code' in result:
+        return "REST API KEY를 확인해주세요"
+    response = result['generations'].pop()['text']
+    return response
 
-problem_type = ["빈칸 문제", "삽입 문제", "순서 배열 문제", "be 동사 변형 문제"]
+problem_type = ["빈칸 문제", "삽입 문제", "순서 배열 문제", "be 동사 변형 문제", "요지 찾기 문제"]
 
 
-def createProblems(context, problem):
+def createProblems(context, problem, key, max_tokens):
     value = ["문제가 생성되지 않았습니다"] * len(problem_type)
     for i in range(len(problem)):
         if problem[i] == problem_type[0]:
@@ -167,13 +178,17 @@ def createProblems(context, problem):
             value[2] = orderVariation(context)
         elif problem[i] == problem_type[3]:
             value[3] = beVerbVariation(context)
+        elif problem[i] == problem_type[4]:
+            value[4] = summarizeProblems(context, key, max_tokens)
         else:
             value = ["What The Fuck!"] * len(problem_type)
-    return value[0], value[1], value[2], value[3]
+    return value[0], value[1], value[2], value[3], value[4]
         
 
 component_context = gr.components.Textbox(interactive=True, label="영어 본문", placeholder="변형 문제를 제작할 영어 본문을 입력해주세요 (●'◡'●)\n\n참고: 삽입 문제는 9줄 이상, 그 외 유형은 7줄 이상의 문장으로 구성되어 있어야 합니다")
 component_problem_type = gr.components.CheckboxGroup(label="어떤 종류의 문제를 생성하시겠습니까?", type="value", choices=problem_type)
+component_rest_api_key = gr.components.Textbox(interactive=True, label="Kakao Developers REST API KEY", placeholder="REST API KEY를 입력해주세요")
+component_max_tokens = gr.components.Slider(100, 1000)
 
 outputs=[]
 
@@ -182,7 +197,7 @@ for i in range(max(1, len(problem_type))):
 
 demo = gr.Interface(
     fn=createProblems,
-    inputs=[component_context, component_problem_type],
+    inputs=[component_context, component_problem_type, component_rest_api_key, component_max_tokens],
     outputs=outputs
 )
 demo.launch(share=True)
